@@ -13,6 +13,20 @@
 |
 */
 
-$router->get('/', function () use ($router) {
-    return $router->app->version();
+$router->group(['prefix' => 'api'], function () use ($router) {
+    $router->group(['prefix' => 'series'], function () use ($router) {
+        $router->post('/', 'SeriesController@create');
+        $router->get('/', 'SeriesController@index');
+        $router->get('/{id}', 'SeriesController@show');
+        $router->put('/{id}', 'SeriesController@update');
+        $router->delete('/{id}', 'SeriesController@destroy');
+    });
+
+    $router->group(['prefix' => 'episodes'], function () use ($router) {
+        $router->post('/', 'EpisodesController@create');
+        $router->get('/', 'EpisodesController@index');
+        $router->get('/{id}', 'EpisodesController@show');
+        $router->put('/{id}', 'EpisodesController@update');
+        $router->delete('/{id}', 'EpisodesController@destroy');
+    });
 });
