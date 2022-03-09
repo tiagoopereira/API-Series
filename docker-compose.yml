@@ -3,10 +3,10 @@ services:
   php:
     build:
       context: .
-    image: phpdocker
-    container_name: php
+    image: php_api_series
+    container_name: api_series
     ports:
-      - "80:80"
+      - "8000:8000"
     volumes:
       - ".:/var/www/html/" 
-    command: php -S 0.0.0.0:80 -t public/
+    command: php -S 0.0.0.0:8000 -t public/
