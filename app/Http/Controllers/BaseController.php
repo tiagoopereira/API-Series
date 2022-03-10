@@ -2,16 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use App\Service\ResponseErrorService;
 
 abstract class BaseController extends Controller
 {
     protected string $class;
 
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $resources = $this->class::all();
+        $per_page = $request->per_page;
+        $resources = $this->class::paginate($per_page);
+
         return response()->json($resources);
     }
 
@@ -20,7 +23,7 @@ abstract class BaseController extends Controller
         $resource = $this->class::find($id);
 
         if (!$resource) {
-            return response()->json(['error' => 'Resource not found'], JsonResponse::HTTP_NOT_FOUND);
+            return ResponseErrorService::json('Resource not found', JsonResponse::HTTP_NOT_FOUND);
         }
 
         return response()->json($resource);
@@ -37,7 +40,7 @@ abstract class BaseController extends Controller
         $resource = $this->class::find($id);
 
         if (!$resource) {
-            return response()->json(['error' => 'Resource not found'], JsonResponse::HTTP_NOT_FOUND);
+            return ResponseErrorService::json('Resource not found', JsonResponse::HTTP_NOT_FOUND);
         }
 
         $resource->fill($request->all());
@@ -51,7 +54,7 @@ abstract class BaseController extends Controller
         $removedResources = $this->class::destroy($id);
 
         if (!$removedResources) {
-            return response()->json(['error' => 'Resource not found'], JsonResponse::HTTP_NOT_FOUND);
+            return ResponseErrorService::json('Resource not found', JsonResponse::HTTP_NOT_FOUND);
         }
 
         return response()->json('', JsonResponse::HTTP_NO_CONTENT);
