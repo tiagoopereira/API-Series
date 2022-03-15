@@ -1,41 +1,26 @@
 <?php
 
+use App\Models\User;
 use App\Models\Serie;
 use Laravel\Lumen\Testing\DatabaseMigrations;
+use Illuminate\Contracts\Auth\Authenticatable;
 
 class SeriesControllerTest extends TestCase
 {
     use DatabaseMigrations;
 
-    const BASE_URI = '/api/series';
-    public string $token;
+    private Authenticatable $user;
 
     public function setUp(): void
     {
         parent::setUp();
 
-        $this->artisan('db:seed');
-
-        $user = [
-            'email' => 'teste@email.com',
-            'password' => '123456'
-        ];
-
-        $response = $this->post('/api/auth/login', $user)->response;
-        $this->token = 'Bearer ' . json_decode($response->getContent(), true)['access_token'];
+        $this->user = User::factory()->create();
     }
 
-    public function testUserCantAccessSeriesWithoutLogIn(): void
+    public function testUserShouldNotCreateASerieWithoutRequiredFields(): void
     {
-        $response = $this->post(self::BASE_URI)->response;
-
-        $this->assertResponseStatus(401);
-        $this->assertEquals('Unauthorized.', $response->getContent());
-    }
-
-    public function testUserCantCreateASerieWithNoName(): void
-    {
-        $this->post(self::BASE_URI, [], ['Authorization' => $this->token]);
+        $this->actingAs($this->user)->post(route('series.create'), []);
 
         $this->assertResponseStatus(422);
         $this->seeJsonContains(['name' => ['The name field is required.']]);
@@ -43,7 +28,7 @@ class SeriesControllerTest extends TestCase
 
     public function testUserCanCreateASerie(): void
     {
-        $this->post(self::BASE_URI, ['name' => 'How I Met Your Mother'], ['Authorization' => $this->token]);
+        $this->actingAs($this->user)->post(route('series.create'), ['name' => 'How I Met Your Mother']);
 
         $this->assertResponseStatus(201);
         $this->seeInDatabase('series', ['name' => 'How I Met Your Mother']);
@@ -60,7 +45,7 @@ class SeriesControllerTest extends TestCase
 
     public function testUserCanVisualizeSeries(): void
     {
-        $this->get(self::BASE_URI, ['Authorization' => $this->token]);
+        $this->actingAs($this->user)->get(route('series.index'));
 
         $this->assertResponseOk();
         $this->seeJsonContains(['data' => []]);
@@ -85,7 +70,7 @@ class SeriesControllerTest extends TestCase
     {
         $serie = Serie::create(['name' => 'How I Met Your Mother']);
 
-        $this->get(self::BASE_URI . "/{$serie->id}", ['Authorization' => $this->token]);
+        $this->actingAs($this->user)->get(route('series.show', ['id' => $serie->id]));
 
         $this->assertResponseOk();
         $this->seeJsonContains([
@@ -104,7 +89,7 @@ class SeriesControllerTest extends TestCase
         $serie = Serie::create(['name' => 'How I Met Your Mother']);
         $data = ['name' => 'How I Met Your Father'];
 
-        $this->put(self::BASE_URI . "/{$serie->id}", $data, ['Authorization' => $this->token]);
+        $this->actingAs($this->user)->put(route('series.update', ['id' => $serie->id]), $data);
 
         $this->assertResponseOk();
         $this->seeInDatabase('series', ['id' => $serie->id, 'name' => 'How I Met Your Father']);
@@ -123,7 +108,7 @@ class SeriesControllerTest extends TestCase
     {
         $serie = Serie::create(['name' => 'How I Met Your Mother']);
 
-        $this->delete(self::BASE_URI . "/{$serie->id}", [], ['Authorization' => $this->token]);
+        $this->actingAs($this->user)->delete(route('series.destroy', ['id' => $serie->id]), []);
 
         $this->assertResponseStatus(204);
         $this->notSeeInDatabase('series', ['id' => $serie->id]);

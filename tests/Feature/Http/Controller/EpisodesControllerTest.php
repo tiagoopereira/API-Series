@@ -1,29 +1,22 @@
 <?php
 
-use App\Models\Episode;
+use App\Models\User;
 use App\Models\Serie;
+use App\Models\Episode;
 use Laravel\Lumen\Testing\DatabaseMigrations;
+use Illuminate\Contracts\Auth\Authenticatable;
 
 class EpisodesControllerTest extends TestCase
 {
     use DatabaseMigrations;
 
-    const BASE_URI = '/api/episodes';
-    public string $token;
+    private Authenticatable $user;
 
     public function setUp(): void
     {
         parent::setUp();
 
-        $this->artisan('db:seed');
-
-        $user = [
-            'email' => 'teste@email.com',
-            'password' => '123456'
-        ];
-
-        $response = $this->post('/api/auth/login', $user)->response;
-        $this->token = 'Bearer ' . json_decode($response->getContent(), true)['access_token'];
+        $this->user = User::factory()->create();
     }
 
     private function createSerie(): Serie
@@ -31,17 +24,9 @@ class EpisodesControllerTest extends TestCase
         return Serie::create(['name' => 'How I Met Your Mother']);
     }
 
-    public function testUserCantAccessEpisodesWithoutLogIn(): void
+    public function testShouldNotCreateAEpisodeWithoutRequiredFields(): void
     {
-        $response = $this->post(self::BASE_URI)->response;
-
-        $this->assertResponseStatus(401);
-        $this->assertEquals('Unauthorized.', $response->getContent());
-    }
-
-    public function testUserCantCreateAEpisode(): void
-    {
-        $this->post(self::BASE_URI, [], ['Authorization' => $this->token]);
+        $this->actingAs($this->user)->post(route('episodes.create'), []);
 
         $this->assertResponseStatus(422);
         $this->seeJsonContains(['season' => ['The season field is required.']]);
@@ -49,7 +34,7 @@ class EpisodesControllerTest extends TestCase
         $this->seeJsonContains(['serie_id' => ['The serie id field is required.']]);
     }
 
-    public function testUserCanCreateAEpisode(): void
+    public function testCanCreateAEpisode(): void
     {
         $serie = $this->createSerie();
 
@@ -60,7 +45,7 @@ class EpisodesControllerTest extends TestCase
             'serie_id' => $serie->id
         ];
 
-        $this->post(self::BASE_URI, $episode, ['Authorization' => $this->token]);
+        $this->actingAs($this->user)->post(route('episodes.create'), $episode);
 
         $this->assertResponseStatus(201);
         $this->seeInDatabase('episodes', [
@@ -89,7 +74,7 @@ class EpisodesControllerTest extends TestCase
 
     public function testUserCanVisualizeEpisodes(): void
     {
-        $this->get(self::BASE_URI, ['Authorization' => $this->token]);
+        $this->actingAs($this->user)->get(route('episodes.index'));
 
         $this->assertResponseOk();
         $this->seeJsonContains(['data' => []]);
@@ -119,7 +104,7 @@ class EpisodesControllerTest extends TestCase
             'serie_id' => $serie->id
         ]);
 
-        $this->get(self::BASE_URI . "/{$episode->id}", ['Authorization' => $this->token]);
+        $this->actingAs($this->user)->get(route('episodes.show', ['id' => $episode->id]));
 
         $this->assertResponseOk();
         $this->seeJsonContains([
@@ -156,7 +141,7 @@ class EpisodesControllerTest extends TestCase
             'serie_id' => $serie->id
         ];
 
-        $this->put(self::BASE_URI . "/{$episode->id}", $data, ['Authorization' => $this->token]);
+        $this->actingAs($this->user)->put(route('episodes.update', ['id' => $episode->id]), $data);
 
         $this->assertResponseOk();
         $this->seeInDatabase('episodes', [
@@ -194,7 +179,7 @@ class EpisodesControllerTest extends TestCase
             'serie_id' => $serie->id
         ]);
 
-        $this->delete(self::BASE_URI . "/{$episode->id}", [], ['Authorization' => $this->token]);
+        $this->actingAs($this->user)->delete(route('episodes.destroy', ['id' => $episode->id]), []);
 
         $this->assertResponseStatus(204);
         $this->notSeeInDatabase('episodes', ['id' => $episode->id]);
@@ -205,7 +190,7 @@ class EpisodesControllerTest extends TestCase
         $serie = Serie::create(['name' => 'How I Met Your Mother']);
         Episode::create(['season' => 1, 'number' => 1, 'watched' => false, 'serie_id' => $serie->id]);
 
-        $this->get("api/series/{$serie->id}/episodes", ['Authorization' => $this->token]);
+        $this->actingAs($this->user)->get(route('series.episodes', ['serieId' => $serie->id]));
 
         $this->assertResponseOk();
         $this->seeJsonStructure([
