@@ -7,41 +7,59 @@ class AuthControllerTest extends TestCase
 {
     use DatabaseMigrations;
 
-    const BASE_URI = '/api/auth/login';
-
     public function setUp(): void
     {
         parent::setUp();
-        $this->artisan('db:seed');
     }
 
-    public function testUserCantLogin(): void
+    public function testUserShouldBeDeniedIfNotRegistered(): void
     {
-        $user = User::factory()->create();
-        $userArr = [
-            'email' => $user->email,
-            'password' => $user->password
+        $payload = [
+            'email' => 'teste@email.com',
+            'password' => 'secret123'
         ];
 
-        $this->post(self::BASE_URI, $userArr);
+        $this->post(route('auth.login'), $payload);
 
         $this->assertResponseStatus(401);
         $this->seeJsonStructure(['error', 'code', 'message']);
         $this->seeJsonEquals([
             'error' => true,
             'code' => 401,
-            'message' => 'Email or password are invalid'
+            'message' => 'Wrong credentials'
         ]);
     }
 
-    public function testUserCanLogin(): void
+    public function testUserShouldBeDeniedIfSendWrongPassword(): void
     {
-        $user = [
-            'email' => 'teste@email.com',
-            'password' => '123456'
+        $user = User::factory()->create();
+
+        $payload = [
+            'email' => $user->email,
+            'password' => 'teste'
         ];
 
-        $this->post(self::BASE_URI, $user);
+        $this->post(route('auth.login'), $payload);
+
+        $this->assertResponseStatus(401);
+        $this->seeJsonStructure(['error', 'code', 'message']);
+        $this->seeJsonEquals([
+            'error' => true,
+            'code' => 401,
+            'message' => 'Wrong credentials'
+        ]);
+    }
+
+    public function testUserCanAuthenticate(): void
+    {
+        $user = User::factory()->create();
+
+        $payload = [
+            'email' => $user->email,
+            'password' => 'secret123'
+        ];
+
+        $this->post(route('auth.login'), $payload);
 
         $this->assertResponseStatus(200);
         $this->seeJsonStructure(['access_token']);

@@ -24,7 +24,7 @@ class AuthController extends Controller
         $user = User::where('email', $email)->first();
 
         if (is_null($user) || !Hash::check($password, $user->password)) {
-            return ResponseErrorService::json('Email or password are invalid', JsonResponse::HTTP_UNAUTHORIZED);
+            return ResponseErrorService::json('Wrong credentials', JsonResponse::HTTP_UNAUTHORIZED);
         }
 
         $token = JWT::encode(['email' => $email], env('JWT_KEY'), 'HS256');
