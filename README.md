@@ -7,7 +7,7 @@
     - make run
     - porta utilizada: 8000
 
-#### Rotas
+#### Rotas:
   ```/api/auth/login [POST] => Login com e-mail e senha.```
   - Payload: <br/>
     ```json
@@ -18,7 +18,7 @@
     ```
 
   - <b>Auth</b>
-      - Séries <br/>
+      - Séries: <br/>
           ```/api/series [POST] => Criar uma série.```  <br/>
           - Payload: <br/>
               ```json
@@ -37,7 +37,7 @@
               ```
           ```/api/series/{id} [DELETE] => Deletar uma série.``` <br/>
 
-      - Episódios <br/>
+      - Episódios: <br/>
           ```/api/episodes [POST] => Criar um episódio.``` <br/>
         - Payload:
             ```json 
