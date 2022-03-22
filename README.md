@@ -17,8 +17,8 @@
         }
     ```
 
-  - <b>Auth</b>
-      - Séries: <br/>
+  - <b>Auth:</b>
+      - <b>Séries:</b> <br/>
           ```/api/series [POST] => Criar uma série.```  <br/>
           - Payload: <br/>
               ```json
@@ -37,7 +37,7 @@
               ```
           ```/api/series/{id} [DELETE] => Deletar uma série.``` <br/>
 
-      - Episódios: <br/>
+      - <b>Episódios:</b> <br/>
           ```/api/episodes [POST] => Criar um episódio.``` <br/>
         - Payload:
             ```json 
