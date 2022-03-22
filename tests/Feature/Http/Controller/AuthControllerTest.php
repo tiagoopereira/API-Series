@@ -7,11 +7,6 @@ class AuthControllerTest extends TestCase
 {
     use DatabaseMigrations;
 
-    public function setUp(): void
-    {
-        parent::setUp();
-    }
-
     public function testUserShouldBeDeniedIfNotRegistered(): void
     {
         $payload = [
@@ -52,8 +47,9 @@ class AuthControllerTest extends TestCase
 
     public function testUserCanAuthenticate(): void
     {
-        $user = User::factory()->create();
+        $this->artisan('passport:install');
 
+        $user = User::factory()->create();
         $payload = [
             'email' => $user->email,
             'password' => 'secret123'
