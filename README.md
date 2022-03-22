@@ -8,7 +8,7 @@
     - porta: 8000
 
 #### Rotas:
-  ```/api/auth/login [POST] => Login com e-mail e senha.```
+  ```/api/auth/login [POST] => Login do usuário.```
   - Payload: <br/>
     ```json
         {
