@@ -5,7 +5,7 @@
     - Make.
 ### Execução:
     - make run
-    - porta utilizada: 8000
+    - porta: 8000
 
 #### Rotas:
   ```/api/auth/login [POST] => Login com e-mail e senha.```
