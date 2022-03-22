@@ -27,8 +27,11 @@ class AuthController extends Controller
             return ResponseErrorService::json('Wrong credentials', JsonResponse::HTTP_UNAUTHORIZED);
         }
 
-        $token = JWT::encode(['email' => $email], env('JWT_KEY'), 'HS256');
+        $token = $user->createToken('user');
 
-        return response()->json(['access_token' => $token]);
+        return response()->json([
+            'access_token' => $token->accessToken,
+            'expires_at' => $token->token->expires_at
+        ]);
     }
 }
