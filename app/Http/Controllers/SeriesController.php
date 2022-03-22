@@ -17,7 +17,7 @@ class SeriesController extends BaseController
     public function create(Request $request): JsonResponse
     {
         $this->validate($request, [
-            'name' => 'required|max:255'
+            'name' => 'required|max:255|unique:series'
         ]);
 
         return parent::create($request);
