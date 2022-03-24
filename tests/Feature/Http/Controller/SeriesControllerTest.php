@@ -66,7 +66,7 @@ class SeriesControllerTest extends TestCase
         ]);
     }
 
-    public function testeUserCanVisualizeASerie(): void
+    public function testUserCanVisualizeASerie(): void
     {
         $serie = Serie::create(['name' => 'How I Met Your Mother']);
 
@@ -84,7 +84,7 @@ class SeriesControllerTest extends TestCase
         ]);
     }
 
-    public function testeUserCanUpdateASerie(): void
+    public function testUserCanUpdateASerie(): void
     {
         $serie = Serie::create(['name' => 'How I Met Your Mother']);
         $data = ['name' => 'How I Met Your Father'];
@@ -104,7 +104,7 @@ class SeriesControllerTest extends TestCase
         ]);
     }
 
-    public function testeUserCanDeleteASerie(): void
+    public function testUserCanDeleteASerie(): void
     {
         $serie = Serie::create(['name' => 'How I Met Your Mother']);
 

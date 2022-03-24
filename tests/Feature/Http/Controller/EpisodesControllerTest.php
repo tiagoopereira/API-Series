@@ -95,7 +95,7 @@ class EpisodesControllerTest extends TestCase
         ]);
     }
 
-    public function testeUserCanVisualizeAEpisode(): void
+    public function testUserCanVisualizeAEpisode(): void
     {
         $serie = $this->createSerie();
         $episode = Episode::create([
@@ -124,7 +124,7 @@ class EpisodesControllerTest extends TestCase
         ]);
     }
 
-    public function testeUserCanUpdateEpisode(): void
+    public function testUserCanUpdateEpisode(): void
     {
         $serie = $this->createSerie();
         $episode = Episode::create([
@@ -169,7 +169,7 @@ class EpisodesControllerTest extends TestCase
         ]);
     }
 
-    public function testeUserCanDeleteAEpisode(): void
+    public function testUserCanDeleteAEpisode(): void
     {
         $serie = $this->createSerie();
         $episode = Episode::create([
@@ -185,7 +185,7 @@ class EpisodesControllerTest extends TestCase
         $this->notSeeInDatabase('episodes', ['id' => $episode->id]);
     }
 
-    public function testeUserCanVisualizeSerieEpisodes(): void
+    public function testUserCanVisualizeSerieEpisodes(): void
     {
         $serie = Serie::create(['name' => 'How I Met Your Mother']);
         Episode::create(['season' => 1, 'number' => 1, 'watched' => false, 'serie_id' => $serie->id]);
