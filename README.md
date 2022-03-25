@@ -36,6 +36,7 @@
                 }
               ```
           ```/api/series/{id} [DELETE] => Deletar uma série.``` <br/>
+          ```/api/series/{id}/episdoes [GET] => Listar os episódios uma série.``` <br/>
 
       - <b>Episódios:</b> <br/>
           ```/api/episodes [POST] => Criar um episódio.``` <br/>
