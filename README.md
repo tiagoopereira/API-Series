@@ -1,4 +1,4 @@
-# API-Series
+# API Series
 ### Necessário:
     - Docker e docker-compose.
     - Composer.
